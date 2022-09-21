@@ -485,13 +485,13 @@ def UM_EF1_capacitated_assignment(m, pd_bid_matrix, object_caps, agent_caps, age
             # There must be some item of max value.
             m.addConstr(0 <= y[i,j,o])
             # Can't be an item that is unallocated to j.
-            m.addConstr(y[i,j,o] <= assigned[i,o])
+            m.addConstr(y[i,j,o] <= assigned[j,o])
         
         # Constraints over the set of items
         # There can be only one such item.
         m.addConstr(gpy.quicksum(y[i,j,o] for o in objects) <= 1)
         # Enforce t_{i,j} takes this value
-        m.addConstr(t[i,j] <= gpy.quicksum(y[i,j,o] * pd_bid_matrix.loc[a,o] for o in objects))
+        m.addConstr(t[i,j] <= gpy.quicksum(y[i,j,o] * pd_bid_matrix.loc[i,o] for o in objects))
         m.update()
         
         # Express the EF1 constraint here.
@@ -501,6 +501,7 @@ def UM_EF1_capacitated_assignment(m, pd_bid_matrix, object_caps, agent_caps, age
     # Util SW
     m.setObjective(gpy.quicksum(utility[a] for a in agents), gpy.GRB.MAXIMIZE)
     return m, assigned, utility
+
 
 ## UM within Prop 1 Model
 
